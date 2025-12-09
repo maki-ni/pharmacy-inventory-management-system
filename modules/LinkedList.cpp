@@ -25,8 +25,21 @@ int LinkedList::front() const
 
 void LinkedList::insertAtEnd(int value)
 {
-    Node *newNode = new Node{value, head};
-    head = newNode;
+    Node *newNode = new Node{value, nullptr};
+
+    if (isEmpty())
+    {
+        head = newNode;
+        return;
+    }
+
+    Node *current = head;
+    while (current->next != nullptr)
+    {
+        current = current->next;
+    }
+
+    current->next = newNode;
 }
 
 void LinkedList::display() const

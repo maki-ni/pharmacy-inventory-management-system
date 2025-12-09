@@ -12,7 +12,7 @@ struct Node
 class LinkedList
 {
 public:
-    LinkedList() { head = nullptr; }
+    LinkedList();
     void insertAtEnd(int value);
     void removeFront();
     int front() const;
