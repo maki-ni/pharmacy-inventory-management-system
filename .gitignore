@@ -4,3 +4,5 @@ patients.csv
 .vscode
 temp.exe
 app
+.vscode/
+*.exe
