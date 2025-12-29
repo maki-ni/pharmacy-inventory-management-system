@@ -12,7 +12,7 @@ int main()
     pq.importFromFile("patients.csv");
     cout << endl;
 
-    // Added drugs 
+    // Added drugs
     dr.addDrug("Ibuprofen", 01, 10, "2026-01-01");
     dr.addDrug("Paracetamol", 02, 20, "2027-02-01");
     dr.addDrug("Cough Drops", 03, 13, "2024-01-01");
@@ -21,14 +21,17 @@ int main()
     cout << endl;
 
     // discarding expired drugs and writing files
-    //dr.exportToFile("drugs.csv");
+    // dr.exportToFile("drugs.csv");
     dr.discardExpiredFromCSV("drugs.csv");
 
     // patients added
     pq.enqueue(3, "Mary");
     pq.enqueue(4, "James");
     pq.display();
-
+    // count the number of drugs
+    int count = dr.getDrugTypeCount();
+    cout << "There are a total of " << count << " drugs currently." << endl;
     // Export current data to files
+
     pq.exportToFile("patients.csv");
 }
