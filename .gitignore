@@ -1,4 +1,6 @@
-build.sh
 app.exe
 drugs.csv
 patients.csv
+.vscode
+temp.exe
+app

@@ -9,3 +9,6 @@ g++ main.cpp modules/PatientQueue.cpp modules/DrugBST.cpp -o app.exe;
 Write-Host "Build Complete! Running ..."
 .\app.exe;
 )
+
+For linux systems, simply run ./build.sh!
+
