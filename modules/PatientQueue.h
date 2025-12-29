@@ -23,8 +23,6 @@ public:
     void display();
     void exportToFile(const string &filename) const;
     void importFromFile(const string &filename);
-    int getPatientCount() const; // added
-
 };
 
 #endif

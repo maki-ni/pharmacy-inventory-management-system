@@ -28,7 +28,6 @@ private:
     bool searchById(Drug *node, int id);
     void inorder(Drug *node);
     void inorderToFile(Drug *node, ofstream &out);
-    int countNodes(Drug *node);//added
     void clear(Drug *node);
 
 public:
@@ -38,8 +37,6 @@ public:
     void findDrugId(int id);
     void displayDrugs();
     void exportToFile(const string &filename);
-    void importFromFile(const string &filename); 
-    int getDrugTypeCount();//added
     void importFromFile(const string &filename);
     void clearTree();
     void discardExpiredFromCSV(const string &filename);
