@@ -6,9 +6,28 @@
 using namespace std;
 
 PatientQueue::PatientQueue() : front(nullptr), rear(nullptr) {}
+bool PatientQueue::idExists(int id)
+{
+    Patient *current = front;
+    while (current != nullptr)
+    {
+        if (current->id == id)
+        {
+            return true; // Found a match
+        }
+        current = current->next;
+    }
+    return false; // No match found
+}
 
 void PatientQueue::enqueue(int id, string name)
 {
+    // Check for duplicate ID before doing anything else
+    if (idExists(id))
+    {
+        cout << "Error: Patient with ID " << id << " already exists. Skipping..." << endl;
+        return;
+    }
     Patient *newPatient = new Patient{id, name, nullptr};
     if (rear == nullptr)
     {

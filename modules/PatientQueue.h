@@ -18,6 +18,7 @@ private:
 
 public:
     PatientQueue();
+    bool idExists(int id);
     void enqueue(int id, string name);
     void dequeue();
     void display();
