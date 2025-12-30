@@ -20,6 +20,17 @@ Drug *DrugBST::insert(Drug *node, string name, int id, int quantity, string expi
         node->left = insert(node->left, name, id, quantity, expiryDate);
     else if (name > node->name)
         node->right = insert(node->right, name, id, quantity, expiryDate);
+    else
+    {
+        // NAME MATCHES: The drug already exists!
+        // Increment the quantity instead of creating a new node
+        node->quantity += quantity;
+
+        // Optional: Update the expiry date if the new batch is different
+        node->expiryDate = expiryDate;
+
+        cout << "Update: Added " << quantity << " to existing stock of " << name << endl;
+    }
     return node;
 }
 
