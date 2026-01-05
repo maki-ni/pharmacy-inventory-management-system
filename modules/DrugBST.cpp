@@ -6,20 +6,20 @@
 using namespace std;
 
 // Drug constructor
-Drug::Drug(string n, int i, int quan, string expirty) : name(n), id(i), quantity(quan), expiryDate(expirty), left(nullptr), right(nullptr) {}
+Drug::Drug(string n, int i, int quan, string expirty, double priceVal) : name(n), id(i), quantity(quan), expiryDate(expirty), price(priceVal), left(nullptr), right(nullptr) {}
 
 // DrugBST constructor
 DrugBST::DrugBST() : root(nullptr) {}
 
 // Insert into BST
-Drug *DrugBST::insert(Drug *node, string name, int id, int quantity, string expiryDate)
+Drug *DrugBST::insert(Drug *node, string name, int id, int quantity, string expiryDate, double price)
 {
     if (!node)
-        return new Drug(name, id, quantity, expiryDate);
+        return new Drug(name, id, quantity, expiryDate, price);
     if (name < node->name)
-        node->left = insert(node->left, name, id, quantity, expiryDate);
+        node->left = insert(node->left, name, id, quantity, expiryDate, price);
     else if (name > node->name)
-        node->right = insert(node->right, name, id, quantity, expiryDate);
+        node->right = insert(node->right, name, id, quantity, expiryDate, price);
     else
     {
         // NAME MATCHES: The drug already exists!
@@ -28,7 +28,7 @@ Drug *DrugBST::insert(Drug *node, string name, int id, int quantity, string expi
 
         // Optional: Update the expiry date if the new batch is different
         node->expiryDate = expiryDate;
-
+        node->price = price;
         cout << "Update: Added " << quantity << " to existing stock of " << name << endl;
     }
     return node;
@@ -75,6 +75,7 @@ Drug *DrugBST::deleteByName(Drug *node, const string &name)
             node->id = succ->id;
             node->quantity = succ->quantity;
             node->expiryDate = succ->expiryDate;
+            node->price = succ->price;
 
             node->right = deleteByName(node->right, succ->name);
         }
@@ -106,13 +107,35 @@ bool DrugBST::searchById(Drug *node, int id)
     return searchById(node->right, id);
 }
 
+// helper: return pointer to node by id (or nullptr)
+Drug *DrugBST::findById(Drug *node, int id)
+{
+    if (!node)
+        return nullptr;
+    if (node->id == id)
+        return node;
+
+    Drug *leftResult = findById(node->left, id);
+    if (leftResult)
+        return leftResult;
+
+    return findById(node->right, id);
+}
+
 // In-order traversal
 void DrugBST::inorder(Drug *node)
 {
     if (!node)
         return;
     inorder(node->left);
-    cout << node->name << ", " << node->id << ", " << node->quantity << ", " << node->expiryDate << endl;
+    cout << "Name: " << node->name
+         << " | ID: " << node->id
+         << " | Qty: " << node->quantity
+         << " | Expiry: " << node->expiryDate
+         << " | Price: $" << node->price;
+    if (node->quantity < 5)
+        cout << "  <-- RESTOCK NEEDED";
+    cout << endl;
     inorder(node->right);
 }
 // to export in inorder manner
@@ -121,10 +144,8 @@ void DrugBST::inorderToFile(Drug *node, ofstream &out)
     if (!node)
         return;
     inorderToFile(node->left, out);
-    out << node->name << " "
-        << node->id << " "
-        << node->quantity << " "
-        << node->expiryDate << "\n";
+    // CSV: name,id,quantity,expiry,price
+    out << node->name << "," << node->id << "," << node->quantity << "," << node->expiryDate << "," << node->price << "\n";
     inorderToFile(node->right, out);
 }
 // to import before starting the next step
@@ -139,14 +160,15 @@ void DrugBST::importFromFile(const string &filename)
 
     string name, expiryDate;
     int id, quantity;
+    double price;
 
     // Skip header
     string header;
     getline(in, header);
 
-    while (in >> name >> id >> quantity >> expiryDate)
+    while (in >> name >> id >> quantity >> expiryDate >> price)
     {
-        addDrug(name, id, quantity, expiryDate);
+        addDrug(name, id, quantity, expiryDate, price);
     }
 
     in.close();
@@ -171,9 +193,9 @@ void DrugBST::exportToFile(const string &filename)
 }
 
 // Public methods
-void DrugBST::addDrug(string name, int id, int quantity, string expiryDate)
+void DrugBST::addDrug(string name, int id, int quantity, string expiryDate, double price)
 {
-    root = insert(root, name, id, quantity, expiryDate);
+    root = insert(root, name, id, quantity, expiryDate, price);
 }
 
 void DrugBST::findDrugName(string name)
@@ -181,10 +203,24 @@ void DrugBST::findDrugName(string name)
     cout << "Searching for " << name << ": "
          << (searchByName(root, name) ? "Found" : "Not Found") << endl;
 }
+
 void DrugBST::findDrugId(int id)
 {
-    cout << "Searcing for " << id << ": "
-         << (searchById(root, id) ? "Found" : "Not Found") << endl;
+    Drug *node = findById(root, id);
+    if (!node)
+    {
+        cout << "Drug with ID " << id << " not found." << endl;
+        return;
+    }
+
+    cout << "Found: " << node->name
+         << " | Qty: " << node->quantity
+         << " | Price: $" << node->price << endl;
+
+    cout << "Total value: $" << node->quantity * node->price << endl;
+
+    if (node->quantity < 5)
+        cout << "RESTOCK NEEDED" << endl;
 }
 
 void DrugBST::displayDrugs()
@@ -214,7 +250,7 @@ void DrugBST::collectValidDrugs(Drug *node, vector<Drug> &valid, const string &t
         return;
     collectValidDrugs(node->left, valid, today);
     if (!isExpired(node->expiryDate, today))
-        valid.emplace_back(node->name, node->id, node->quantity, node->expiryDate);
+        valid.emplace_back(node->name, node->id, node->quantity, node->expiryDate, node->price);
     else
         cout << "Discarded expired drug: " << node->name << endl;
     collectValidDrugs(node->right, valid, today);
@@ -229,7 +265,7 @@ void DrugBST::discardExpiredFromCSV(const string &filename)
     // rebuild BST
     clearTree();
     for (auto &d : validDrugs)
-        addDrug(d.name, d.id, d.quantity, d.expiryDate);
+        addDrug(d.name, d.id, d.quantity, d.expiryDate, d.price);
 
     // overwrite CSV
     exportToFile(filename);

@@ -20,25 +20,51 @@ bool PatientQueue::idExists(int id)
     return false; // No match found
 }
 
-void PatientQueue::enqueue(int id, string name)
+void PatientQueue::enqueue(int id, string name, bool isPregnant)
 {
-    // Check for duplicate ID before doing anything else
-    if (idExists(id))
-    {
+    if (idExists(id)) {
         cout << "Error: Patient with ID " << id << " already exists. Skipping..." << endl;
         return;
     }
-    Patient *newPatient = new Patient{id, name, nullptr};
-    if (rear == nullptr)
-    {
+
+    Patient* newPatient = new Patient{id, name, isPregnant, nullptr};
+
+    // Case 1: Empty queue
+    if (front == nullptr) {
         front = rear = newPatient;
+        return;
     }
-    else
-    {
+
+    // Case 2: NOT pregnant → normal enqueue
+    if (!isPregnant) {
         rear->next = newPatient;
+        rear = newPatient;
+        return;
+    }
+
+    // Case 3: Pregnant → priority insertion
+    // If front is not pregnant, insert at front
+    if (!front->isPregnant) {
+        newPatient->next = front;
+        front = newPatient;
+        return;
+    }
+
+    // Otherwise, insert after last pregnant patient
+    Patient* current = front;
+    while (current->next != nullptr && current->next->isPregnant) {
+        current = current->next;
+    }
+
+    newPatient->next = current->next;
+    current->next = newPatient;
+
+    // Update rear if inserted at the end
+    if (newPatient->next == nullptr) {
         rear = newPatient;
     }
 }
+
 
 void PatientQueue::dequeue()
 {
@@ -61,68 +87,71 @@ void PatientQueue::display()
     cout << "Patients in queue:" << endl;
     while (current != nullptr)
     {
-        cout << current->id << " - " << current->name << endl;
+        cout << current->id << " - " << current->name << (current->isPregnant ? " (Pregnant)" : "")<< endl;
         current = current->next;
     }
 }
 // import from file before continuing further
-void PatientQueue::importFromFile(const string &filename)
+void PatientQueue::importFromFile(const string& filename)
 {
     ifstream in(filename);
-    if (!in.is_open())
-    {
+    if (!in.is_open()) {
         cerr << "Failed to open file: " << filename << endl;
         return;
     }
 
     string line;
-    // Skip header
-    getline(in, line);
+    getline(in, line); // skip header
 
-    int id;
-    string name;
+    while (getline(in, line)) {
+        if (line.empty()) continue;
 
-    // Read each line as "id,name"
-    while (getline(in, line))
-    {
-        if (line.empty())
-            continue;
-
-        // Use a stringstream to parse the line
         stringstream ss(line);
-        string idStr;
+        string idStr, name, pregStr;
 
-        // Get id before comma
         getline(ss, idStr, ',');
-        // Get name after comma
-        getline(ss, name);
+        getline(ss, name, ',');
+        getline(ss, pregStr);
 
-        // Convert id string to int
-        id = stoi(idStr);
+        int id = stoi(idStr);
+        bool isPregnant = (pregStr == "1");
 
-        enqueue(id, name);
+        enqueue(id, name, isPregnant);
     }
 
     in.close();
     cout << "Patients imported from: " << filename << endl;
 }
 
-void PatientQueue::exportToFile(const string &filename) const
+
+void PatientQueue::exportToFile(const string& filename) const
 {
     ofstream out(filename);
-    if (!out.is_open())
-    {
+    if (!out.is_open()) {
         cerr << "Failed to open file: " << filename << endl;
         return;
     }
-    // Optional header for clarity
-    out << "id,name" << "\n";
-    Patient *current = front;
-    while (current != nullptr)
-    {
-        out << current->id << "," << current->name << "\n";
+
+    out << "id,name,isPregnant\n";
+
+    Patient* current = front;
+    while (current != nullptr) {
+        out << current->id << ","
+            << current->name << ","
+            << current->isPregnant << "\n";
         current = current->next;
     }
+
     out.close();
-    cout << "Patients exported to: " << filename << endl;
+}
+
+
+int PatientQueue::getPatientCount() const {
+    int count = 0;
+    Patient *current = front;
+    while (current) {
+        ++count;
+        current = current->next;
+    }
+    return count;
 }

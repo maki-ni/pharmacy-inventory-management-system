@@ -16,15 +16,17 @@ struct Drug
     int quantity;
     string catagory;
     string expiryDate;
-    Drug(string n, int i, int quan, string expiry); // automatically initiallizes the res
+    double price;
+    Drug(string n, int i, int quan, string expiry,double priceVal = 0.0); // automatically initiallizes the res
 };
 
 class DrugBST
 {
 private:
     Drug *root;
-    Drug *insert(Drug *node, string name, int id, int quantity, string expiry);
+    Drug *insert(Drug *node, string name, int id, int quantity, string expiry,double price);
     Drug *deleteByName(Drug *node, const string& name);
+    Drug* findById(Drug* node, int id);
     bool searchByName(Drug *node, string name);
     bool searchById(Drug *node, int id);
     void inorder(Drug *node);
@@ -32,10 +34,11 @@ private:
     int countNodes(Drug *node);
     void clear(Drug *node);
     void collectValidDrugs(Drug *node, vector<Drug> &valid, const string &today);
+   
 
 public:
     DrugBST();
-    void addDrug(string name, int id, int quantity, string expiryDate);
+    void addDrug(string name, int id, int quantity, string expiryDate, double price = 0.0);
     void findDrugName(string name);
     void findDrugId(int id);
     void displayDrugs();
@@ -44,6 +47,7 @@ public:
     int getDrugTypeCount();
     void clearTree();
     void discardExpiredFromCSV(const string &filename);
+
 };
 
 #endif

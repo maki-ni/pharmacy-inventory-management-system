@@ -1,14 +1,36 @@
 # Pharmacy-Inventory-Management-System
 
-System that will register patients, search drugs from given database, delete expired drugs, register new drugs into inventory, show number of abvailable drugs of a specific catagory and show total number of drugs in the database and patients registered.
+A system designed to efficiently manage pharmacy operations, utilizing core Data structures and Algorithms concepts to handle patient registration, drug inventory and search operations.
+
+# Features
+
+- **Patient Management**: Register patients and manage queue for service.
+- **Drug Inventory**: Register new drugs and track existing stock.
+- **Expiry Management**: Identify and delete expired drugs from the system.
+- **Reporting**:
+    * Show the number of available drugs in a specific catagory.
+    * Display total number of drugs and registerd patients.
+
+# Data Structures Used
+
+- **Binary Search Tree(BST)**: Used for fast insertion, deletion, and searching of drugs ($O(\log n)$ complexity)
+- **Queue**: Used for managing patients in a First-In-First-Out(FIFO) basis.
 
 # How to run the file
 
-To run the file on your local terminal type ./build.ps1 and it will automaticaly run it (change the code inside ./build.ps1 accordingly -->
-g++ main.cpp modules/PatientQueue.cpp modules/DrugBST.cpp -o app.exe;
-Write-Host "Build Complete! Running ..."
-.\app.exe;
-)
+## Prerequisits
+A C++ compiler (GCC/G++) is needed to run the following files.
 
-For linux systems, simply run ./build.sh!
+## Windows
+Open powershell in the project folder and run the following command
+ ```powershell
+ ./build.ps1
+ ```
+
+## Unix systems
+Open terminal in the project folder and run the following commands.
+```bash
+chmod +x build.sh
+./build.sh
+```
 
