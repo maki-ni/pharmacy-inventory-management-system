@@ -30,8 +30,23 @@ DrugBST::DrugBST() : root(nullptr) {}
 Drug *DrugBST::insert(Drug *node, string name, int id, int quantity, string expiryDate, double price)
 {
     name = toLower(name);
-    if (!node)
-        return new Drug(name, id, quantity, expiryDate, price);
+
+    // Validate required fields
+    if (name.empty())
+    {
+        cerr << "Error: Drug name cannot be empty." << endl;
+        return node;
+    }
+    if (expiryDate.empty())
+    {
+        cerr << "Error: Expiry date cannot be empty for " << name << endl;
+        return node;
+    }
+    if (id < 0)
+    {
+        cerr << "Error: Invalid ID for " << name << endl;
+        return node;
+    }
     if (findById(root, id))
     {
         cerr << "Duplicate ID detected: " << id << endl;
@@ -47,6 +62,9 @@ Drug *DrugBST::insert(Drug *node, string name, int id, int quantity, string expi
         cerr << "Invalid price for " << name << endl;
         return node;
     }
+
+    if (!node)
+        return new Drug(name, id, quantity, expiryDate, price);
 
     if (name < node->name)
         node->left = insert(node->left, name, id, quantity, expiryDate, price);

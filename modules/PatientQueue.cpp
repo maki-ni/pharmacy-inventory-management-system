@@ -22,21 +22,38 @@ bool PatientQueue::idExists(int id)
 
 void PatientQueue::enqueue(int id, string name, bool isPregnant)
 {
-    if (idExists(id)) {
+    // Validate ID
+    if (id <= 0)
+    {
+        cout << "Error: Invalid ID. Must be positive." << endl;
+        return;
+    }
+
+    // Validate name
+    if (name.empty())
+    {
+        cout << "Error: Name cannot be empty." << endl;
+        return;
+    }
+
+    if (idExists(id))
+    {
         cout << "Error: Patient with ID " << id << " already exists. Skipping..." << endl;
         return;
     }
 
-    Patient* newPatient = new Patient{id, name, isPregnant, nullptr};
+    Patient *newPatient = new Patient{id, name, isPregnant, nullptr};
 
     // Case 1: Empty queue
-    if (front == nullptr) {
+    if (front == nullptr)
+    {
         front = rear = newPatient;
         return;
     }
 
     // Case 2: NOT pregnant → normal enqueue
-    if (!isPregnant) {
+    if (!isPregnant)
+    {
         rear->next = newPatient;
         rear = newPatient;
         return;
@@ -44,15 +61,17 @@ void PatientQueue::enqueue(int id, string name, bool isPregnant)
 
     // Case 3: Pregnant → priority insertion
     // If front is not pregnant, insert at front
-    if (!front->isPregnant) {
+    if (!front->isPregnant)
+    {
         newPatient->next = front;
         front = newPatient;
         return;
     }
 
     // Otherwise, insert after last pregnant patient
-    Patient* current = front;
-    while (current->next != nullptr && current->next->isPregnant) {
+    Patient *current = front;
+    while (current->next != nullptr && current->next->isPregnant)
+    {
         current = current->next;
     }
 
@@ -60,11 +79,11 @@ void PatientQueue::enqueue(int id, string name, bool isPregnant)
     current->next = newPatient;
 
     // Update rear if inserted at the end
-    if (newPatient->next == nullptr) {
+    if (newPatient->next == nullptr)
+    {
         rear = newPatient;
     }
 }
-
 
 void PatientQueue::dequeue()
 {
@@ -87,15 +106,16 @@ void PatientQueue::display()
     cout << "Patients in queue:" << endl;
     while (current != nullptr)
     {
-        cout << current->id << " - " << current->name << (current->isPregnant ? " (Pregnant)" : "")<< endl;
+        cout << current->id << " - " << current->name << (current->isPregnant ? " (Pregnant)" : "") << endl;
         current = current->next;
     }
 }
 // import from file before continuing further
-void PatientQueue::importFromFile(const string& filename)
+void PatientQueue::importFromFile(const string &filename)
 {
     ifstream in(filename);
-    if (!in.is_open()) {
+    if (!in.is_open())
+    {
         cerr << "Failed to open file: " << filename << endl;
         return;
     }
@@ -103,8 +123,10 @@ void PatientQueue::importFromFile(const string& filename)
     string line;
     getline(in, line); // skip header
 
-    while (getline(in, line)) {
-        if (line.empty()) continue;
+    while (getline(in, line))
+    {
+        if (line.empty())
+            continue;
 
         stringstream ss(line);
         string idStr, name, pregStr;
@@ -123,19 +145,20 @@ void PatientQueue::importFromFile(const string& filename)
     cout << "Patients imported from: " << filename << endl;
 }
 
-
-void PatientQueue::exportToFile(const string& filename) const
+void PatientQueue::exportToFile(const string &filename) const
 {
     ofstream out(filename);
-    if (!out.is_open()) {
+    if (!out.is_open())
+    {
         cerr << "Failed to open file: " << filename << endl;
         return;
     }
 
     out << "id,name,isPregnant\n";
 
-    Patient* current = front;
-    while (current != nullptr) {
+    Patient *current = front;
+    while (current != nullptr)
+    {
         out << current->id << ","
             << current->name << ","
             << current->isPregnant << "\n";
@@ -145,11 +168,12 @@ void PatientQueue::exportToFile(const string& filename) const
     out.close();
 }
 
-
-int PatientQueue::getPatientCount() const {
+int PatientQueue::getPatientCount() const
+{
     int count = 0;
     Patient *current = front;
-    while (current) {
+    while (current)
+    {
         ++count;
         current = current->next;
     }
