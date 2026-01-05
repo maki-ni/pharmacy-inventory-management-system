@@ -42,6 +42,11 @@ Drug *DrugBST::insert(Drug *node, string name, int id, int quantity, string expi
         cerr << "Invalid quantity for " << name << endl;
         return node;
     }
+    if (price < 0)
+    {
+        cerr << "Invalid price for " << name << endl;
+        return node;
+    }
 
     if (name < node->name)
         node->left = insert(node->left, name, id, quantity, expiryDate, price);
